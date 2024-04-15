@@ -1,0 +1,32 @@
+define('ROOT', __DIR__);
+require_once(ROOT . '/src/utils/NewsManager.php'); 
+require_once(ROOT . '/src/utils/CommentManager.php');
+
+Code above makes the code less flexible because if the directory structure 
+changes or if the project is moved to a different location, these paths need to be updated manually. 
+And Each required PHP file is included manually using require_once. If there are many files to include, this can lead to verbose and repetitive code
+The first code snippet doesn't make use of namespaces. Without namespaces, there's a higher chance of naming conflicts, 
+especially in larger projects where different components might have classes with the same name.
+----------------------------------------------
+
+foreach (NewsManager::getInstance()->listNews() as $news) {
+	echo("############ NEWS " . $news->getTitle() . " ############\n");
+	echo($news->getBody() . "\n");
+	foreach (CommentManager::getInstance()->listComments() as $comment) {
+		if ($comment->getNewsId() == $news->getId()) {
+			echo("Comment " . $comment->getId() . " : " . $comment->getBody() . "\n");
+		}
+	}
+}
+
+The bad practice in this code snippet lies in the unnecessary repetition of method calls within a loop and the potential performance inefficiency due to this approach.
+The list of news is retrieved again on every iteration of the inner comment loop. The repeated retrieval of data and iteration over the lists of news and comments in each 
+iteration of the loop can lead to performance inefficiency, especially with large datasets.
+------------------------------------------------
+
+NewsManager.php and CommentManager.php Files
+
+Using "Prepared Statements" and "Parameter Binding" in order to prevent SQL injection.
+The SQL statement should use placeholders instead of concatenating values directly into the SQL string. This prevents SQL injection attacks by separating the SQL logic 
+from the data, and by automatically escaping the data.
+And by using bindParam ensures that the values are properly sanitized.
